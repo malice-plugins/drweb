@@ -12,3 +12,6 @@
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
+*.bu
+.vscode/
+drweb-11.0.5-av-linux-amd64.run

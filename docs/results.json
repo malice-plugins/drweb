@@ -1,0 +1,9 @@
+{
+  "drweb": {
+    "infected": true,
+    "result": "BackDoor-CSB",
+    "engine": "5600.1067",
+    "database": "9005",
+    "updated": "20180903"
+  }
+}
