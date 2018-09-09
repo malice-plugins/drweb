@@ -91,6 +91,9 @@ func AvScan(timeout int) DrWEB {
 	_, err := utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
 	assert(err)
 
+	// wait a few seconds
+	time.Sleep(3 * time.Second)
+
 	output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	if sErr != nil {
 		// If fails try a second time
