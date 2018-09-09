@@ -1,11 +1,11 @@
 #### Dr.WEB
 
-| Infected |    Result    |  Engine   | Updated  |
-| :------: | :----------: | :-------: | :------: |
-|   true   | BackDoor-CSB | 5600.1067 | 20180903 |
+| Infected |     Result     |    Engine     | Updated  |
+| :------: | :------------: | :-----------: | :------: |
+|   true   | BackDoor.Dizhi | 7.00.33.06080 | 20180909 |
 
 #### Dr.WEB
 
-| Infected | Result |  Engine   | Updated  |
-| :------: | :----: | :-------: | :------: |
-|  false   |        | 5600.1067 | 20180903 |
+| Infected | Result |    Engine     | Updated  |
+| :------: | :----: | :-----------: | :------: |
+|  false   |        | 7.00.33.06080 | 20180909 |

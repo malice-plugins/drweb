@@ -11,7 +11,7 @@ RUN go build -ldflags "-s -w -X main.Version=v$(cat VERSION) -X main.BuildTime=$
 ####################################################
 # PLUGIN BUILDER
 ####################################################
-FROM ubuntu:bionic
+FROM debian:jessie-slim
 
 LABEL maintainer "https://github.com/blacktop"
 
@@ -51,14 +51,14 @@ RUN buildDeps='libreadline-dev:i386 \
     && wget --progress=bar:force https://download.geo.drweb.com/pub/drweb/unix/workstation/11.0/drweb-${DRWEB}-av-linux-amd64.run \
     && chmod 755 /tmp/drweb-${DRWEB}-av-linux-amd64.run \
     && DRWEB_NON_INTERACTIVE=yes /tmp/drweb-${DRWEB}-av-linux-amd64.run \
-    # && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 10100609 \
-    # && echo 'deb http://repo.drweb.com/drweb/debian 11.0 non-free' >> /etc/apt/sources.list \
-    # && apt-key adv --fetch-keys http://repo.drweb.com/drweb/drweb.key \
-    # && apt-get update -q && apt-get install -y drweb-file-servers
     && echo "===> Clean up unnecessary files..." \
     && apt-get purge -y --auto-remove $buildDeps \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives /tmp/* /var/tmp/*
+
+# Ensure ca-certificates is installed for elasticsearch to use https
+RUN apt-get update -qq && apt-get install -yq --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 #COPY drweb.ini /etc/opt/drweb.com/drweb.ini
 
@@ -74,10 +74,6 @@ RUN if [ "x$DRWEB_KEY" != "x" ]; then \
     /opt/drweb.com/bin/drweb-configd -d -p /var/run/drweb-configd.pid; \
     /opt/drweb.com/bin/drweb-ctl license --GetDemo; \
     fi
-
-# Ensure ca-certificates is installed for elasticsearch to use https
-RUN apt-get update -qq && apt-get install -yq --no-install-recommends ca-certificates \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Update Dr.WEB Definitions
 RUN mkdir -p /opt/malice \

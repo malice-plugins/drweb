@@ -1,6 +1,5 @@
 # malice-drweb
 
-[![Circle CI](https://circleci.com/gh/malice-plugins/drweb.png?style=shield)](https://circleci.com/gh/malice-plugins/drweb) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Image](https://img.shields.io/badge/docker%20image-2.32GB-blue.svg)](https://store.docker.com/community/images/malice/drweb)
 
 Malice Dr.WEB AntiVirus Plugin
 
@@ -10,7 +9,7 @@ Malice Dr.WEB AntiVirus Plugin
 
 ### Dependencies
 
-- [ubuntu:bionic (_84.1 MB_\)](https://hub.docker.com/_/ubuntu/)
+- [debian:jessie-slim (_79.2 MB_\)](https://hub.docker.com/_/debian/)
 
 ## Installation
 

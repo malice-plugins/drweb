@@ -13,7 +13,6 @@ all: build size tag test_all
 
 .PHONY: build
 build:
-	# docker build -t $(ORG)/$(NAME):$(VERSION) .
 	docker build --build-arg DRWEB_KEY=${DRWEB_KEY} -t $(ORG)/$(NAME):$(VERSION) .
 
 .PHONY: size

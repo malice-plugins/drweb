@@ -1,5 +1,5 @@
 {
-  "took": 37,
+  "took": 52,
   "timed_out": false,
   "_shards": {
     "total": 1,
@@ -14,43 +14,43 @@
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "KBbZoGUBeQiuTYqIo0Jv",
+        "_id": "fo_uu2UBa3ZPytiB7Gyt",
         "_score": 1,
         "_source": {
           "plugins": {
             "av": {
               "drweb": {
-                "Database": "9005",
-                "Engine": "5600.1067",
+                "Database": "7208559",
+                "Engine": "7.00.33.06080",
                 "Infected": true,
-                "Result": "BackDoor-CSB",
-                "Updated": "20180903",
-                "markdown": "#### Dr.WEB\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | BackDoor-CSB | 5600.1067 | 20180903 |\n"
+                "Result": "BackDoor.Dizhi",
+                "Updated": "20180909",
+                "markdown": "#### Dr.WEB\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| true | BackDoor.Dizhi | 7.00.33.06080 | 20180909 |\n"
               }
             }
           },
-          "scan_date": "2018-09-03T19:12:22.369551471Z"
+          "scan_date": "2018-09-09T01:25:22.202541628Z"
         }
       },
       {
         "_index": "malice",
         "_type": "samples",
-        "_id": "KRbZoGUBeQiuTYqIsULP",
+        "_id": "f4_vu2UBa3ZPytiBDGx4",
         "_score": 1,
         "_source": {
           "plugins": {
             "av": {
               "drweb": {
-                "Database": "9005",
-                "Engine": "5600.1067",
+                "Database": "7208559",
+                "Engine": "7.00.33.06080",
                 "Infected": false,
                 "Result": "",
-                "Updated": "20180903",
-                "markdown": "#### Dr.WEB\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| false |  | 5600.1067 | 20180903 |\n"
+                "Updated": "20180909",
+                "markdown": "#### Dr.WEB\n| Infected      | Result      | Engine      | Updated      |\n|:-------------:|:-----------:|:-----------:|:------------:|\n| false |  | 7.00.33.06080 | 20180909 |\n"
               }
             }
           },
-          "scan_date": "2018-09-03T19:12:26.062064259Z"
+          "scan_date": "2018-09-09T01:25:30.358626467Z"
         }
       }
     ]
