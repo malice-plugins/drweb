@@ -16,3 +16,6 @@
 .vscode/
 drweb-11.0.5-av-linux-amd64.run
 *.key
+
+tests/not.malware
+tests/malware

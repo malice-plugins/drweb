@@ -13,6 +13,10 @@ all: build size tag test_all
 
 .PHONY: build
 build:
+	docker build -t $(ORG)/$(NAME):$(VERSION) .
+
+.PHONY: build_w_key
+build_w_key:
 	docker build --build-arg DRWEB_KEY=${DRWEB_KEY} -t $(ORG)/$(NAME):$(VERSION) .
 
 .PHONY: size
@@ -49,6 +53,8 @@ avtest:
 	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "drweb-ctl --version" > tests/av_version.out
 	@echo "===> Dr.WEB BaseInfo"
 	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "/opt/drweb.com/bin/drweb-configd -d && drweb-ctl baseinfo" > tests/av_baseinfo.out
+	@echo "===> Dr.WEB License"
+	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "/opt/drweb.com/bin/drweb-configd -d && drweb-ctl license" > tests/av_license.out
 	@echo "===> Dr.WEB EICAR Test"
 	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "/opt/drweb.com/bin/drweb-configd -d && drweb-ctl scan EICAR" > tests/av_eicar_scan.out || true
 	@echo "===> Dr.WEB $(MALWARE) Test"
@@ -128,8 +134,10 @@ ci-size: ci-build
 
 clean:
 	docker-clean stop
-	docker image rm $(ORG)/$(NAME):$(VERSION)
-	rm $(MALWARE)
+	docker image rm $(ORG)/$(NAME):$(VERSION)  || true
+	docker image rm $(ORG)/$(NAME):latest || true
+	rm $(MALWARE)  || true
+	rm $(NOT_MALWARE)  || true
 
 # Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help:
