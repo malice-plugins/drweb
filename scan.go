@@ -196,7 +196,7 @@ func updateAV(ctx context.Context) error {
 	fmt.Println("Updating Dr.WEB...")
 
 	// drweb needs to have the daemon started first
-	configd := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	configd := exec.Command("/opt/drweb.com/bin/drweb-configd", "-d")
 	_, err := configd.Output()
 	assert(err)
 	defer configd.Process.Kill()
