@@ -1,5 +1,6 @@
 # malice-drweb
 
+[![Circle CI](https://circleci.com/gh/malice-plugins/drweb.png?style=shield)](https://circleci.com/gh/malice-plugins/drweb) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Image](https://img.shields.io/badge/docker%20image-970MB-blue.svg)](https://store.docker.com/community/images/malice/drweb)
 
 Malice Dr.WEB AntiVirus Plugin
 
