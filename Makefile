@@ -36,7 +36,7 @@ tar:
 	docker save $(ORG)/$(NAME):$(VERSION) -o $(NAME).tar
 
 .PHONY: push
-push: tag
+push: build tag
 	docker push $(ORG)/$(NAME):$(VERSION)
 	docker push $(ORG)/$(NAME):latest
 

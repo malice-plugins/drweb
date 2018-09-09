@@ -92,11 +92,12 @@ func AvScan(timeout int) DrWEB {
 	assert(err)
 
 	// wait a few seconds
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 
 	output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	if sErr != nil {
 		// If fails try a second time
+		time.Sleep(10 * time.Second)
 		output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	}
 
@@ -118,6 +119,9 @@ func ParseDrWEBOutput(drwebOut, baseInfo string, drwebErr error) (ResultsData, e
 	}).Debug("Dr.WEB Output: ", drwebOut)
 
 	if drwebErr != nil {
+		if drwebErr.Error() == "exit status 119" {
+			return ResultsData{Error: "ScanEngine is not available"}, drwebErr
+		}
 		return ResultsData{Error: drwebErr.Error()}, drwebErr
 	}
 
@@ -185,10 +189,15 @@ func getUpdatedDate() string {
 
 func updateAV(ctx context.Context) error {
 	fmt.Println("Updating Dr.WEB...")
-	fmt.Println(utils.RunCommand(ctx, "/usr/local/uvscan/update"))
+
+	// drweb needs to have the daemon started first
+	_, err := utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	assert(err)
+
+	fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "update"))
 	// Update UPDATED file
 	t := time.Now().Format("20060102")
-	err := ioutil.WriteFile("/opt/malice/UPDATED", []byte(t), 0644)
+	err = ioutil.WriteFile("/opt/malice/UPDATED", []byte(t), 0644)
 	return err
 }
 
