@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -34,9 +35,10 @@ var (
 	Version string
 	// BuildTime stores the plugin's build time
 	BuildTime string
-
-	path string
-	hash string
+	// LicenseKey stores the valid Dr.Web license key
+	LicenseKey string
+	path       string
+	hash       string
 	// es is the elasticsearch database object
 	es elasticsearch.Database
 )
@@ -78,21 +80,24 @@ func assert(err error) {
 // AvScan performs antivirus scan
 func AvScan(timeout int) DrWEB {
 
-	defer os.Remove("/tmp/" + hash + ".xml")
-
-	var results ResultsData
 	var output string
 	var sErr error
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 
-	// drweb needs to have the daemon started first
-	_, err := utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	expired, err := didLicenseExpire(ctx)
 	assert(err)
+	if expired {
+		err = updateLicense(ctx)
+		assert(err)
+	}
 
-	// wait a few seconds
-	time.Sleep(2 * time.Second)
+	// drweb needs to have the daemon started first
+	configd := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	_, err = configd.Output()
+	assert(err)
+	defer configd.Process.Kill()
 
 	output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	if sErr != nil {
@@ -104,7 +109,7 @@ func AvScan(timeout int) DrWEB {
 	baseinfo, err := utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "baseinfo")
 	assert(err)
 
-	results, err = ParseDrWEBOutput(output, baseinfo, sErr)
+	results, err := ParseDrWEBOutput(output, baseinfo, sErr)
 
 	return DrWEB{Results: results}
 }
@@ -191,8 +196,10 @@ func updateAV(ctx context.Context) error {
 	fmt.Println("Updating Dr.WEB...")
 
 	// drweb needs to have the daemon started first
-	_, err := utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	configd := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	_, err := configd.Output()
 	assert(err)
+	defer configd.Process.Kill()
 
 	fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "update"))
 	// Update UPDATED file
@@ -201,9 +208,57 @@ func updateAV(ctx context.Context) error {
 	return err
 }
 
-func didLicenseExpire() bool {
-	log.Error("could not find expiration date in license file")
-	return false
+func updateLicense(ctx context.Context) error {
+	log.Debug("updating Dr.WEB license")
+	// drweb needs to have the daemon started first
+	configd := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	_, err := configd.Output()
+	if err != nil {
+		return err
+	}
+	defer configd.Process.Kill()
+
+	// check for exec context timeout
+	if ctx.Err() == context.DeadlineExceeded {
+		return fmt.Errorf("command updateLicense() timed out")
+	}
+
+	if len(LicenseKey) > 0 {
+		fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "license", "--GetRegistered", LicenseKey))
+	} else {
+		fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "license", "--GetDemo"))
+	}
+
+	return nil
+}
+
+func didLicenseExpire(ctx context.Context) (bool, error) {
+	log.Debug("checking Dr.WEB license")
+	// drweb needs to have the daemon started first
+	configd := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
+	_, err := configd.Output()
+	if err != nil {
+		return false, err
+	}
+	defer configd.Process.Kill()
+
+	license := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-ctl", "license")
+	lOut, err := license.Output()
+	if err != nil {
+		return false, err
+	}
+
+	if strings.Contains(string(lOut), "No license") {
+		log.Debug("no licence found or licence has been invalidated")
+		return true, nil
+	}
+
+	if strings.Contains(string(lOut), "expires") {
+		return false, nil
+	}
+
+	log.WithFields(log.Fields{"output": string(lOut)}).Debug("licence expired")
+	return true, nil
 }
 
 func generateMarkDownTable(a DrWEB) string {
@@ -355,11 +410,6 @@ func main() {
 			if _, err = os.Stat(path); os.IsNotExist(err) {
 				assert(err)
 			}
-
-			// if didLicenseExpire() {
-			// 	log.Errorln("drweb license has expired")
-			// 	log.Errorln("please get a new one here: http://www.drweb.com/ca/about/contact-us.aspx")
-			// }
 
 			hash = utils.GetSHA256(path)
 

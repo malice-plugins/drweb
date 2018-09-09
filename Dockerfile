@@ -3,10 +3,13 @@
 ####################################################
 FROM golang:1.11 as go_builder
 
+ARG DRWEB_KEY
+ENV DRWEB_KEY=$DRWEB_KEY
+
 COPY . /go/src/github.com/malice-plugins/drweb
 WORKDIR /go/src/github.com/malice-plugins/drweb
 RUN go get github.com/golang/dep/cmd/dep && dep ensure
-RUN go build -ldflags "-s -w -X main.Version=v$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/avscan
+RUN go build -ldflags "-s -w -X main.LicenseKey=${DRWEB_KEY} -X main.Version=v$(cat VERSION) -X main.BuildTime=$(date -u +%Y%m%d)" -o /bin/avscan
 
 ####################################################
 # PLUGIN BUILDER
@@ -60,7 +63,7 @@ RUN buildDeps='libreadline-dev:i386 \
 RUN apt-get update -qq && apt-get install -yq --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#COPY drweb.ini /etc/opt/drweb.com/drweb.ini
+# COPY drweb.ini /etc/opt/drweb.com/drweb.ini
 
 ARG DRWEB_KEY
 ENV DRWEB_KEY=$DRWEB_KEY
@@ -69,10 +72,12 @@ RUN if [ "x$DRWEB_KEY" != "x" ]; then \
     echo "===> Adding Dr.WEB License Key..."; \
     /opt/drweb.com/bin/drweb-configd -d -p /var/run/drweb-configd.pid; \
     /opt/drweb.com/bin/drweb-ctl license --GetRegistered "$DRWEB_KEY"; \
+    kill $(cat /var/run/drweb-configd.pid); \
     else \
     echo "===> Running Dr.WEB as DEMO..."; \
     /opt/drweb.com/bin/drweb-configd -d -p /var/run/drweb-configd.pid; \
     /opt/drweb.com/bin/drweb-ctl license --GetDemo; \
+    kill $(cat /var/run/drweb-configd.pid); \
     fi
 
 # Update Dr.WEB Definitions
@@ -85,6 +90,8 @@ RUN mkdir -p /opt/malice \
 ADD http://www.eicar.org/download/eicar.com.txt /malware/EICAR
 
 COPY --from=go_builder /bin/avscan /bin/avscan
+
+EXPOSE 4443
 
 WORKDIR /malware
 
