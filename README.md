@@ -63,9 +63,9 @@ Run 'drweb COMMAND --help' for more information on a command.
 {
   "drweb": {
     "infected": true,
-    "result": "BackDoor.Dizhi",
+    "result": "EICAR Test File (NOT a Virus!)",
     "engine": "7.00.33.06080",
-    "database": "7209057",
+    "database": "7208559",
     "updated": "20180909"
   }
 }
@@ -77,9 +77,9 @@ Run 'drweb COMMAND --help' for more information on a command.
 
 #### Dr.WEB
 
-| Infected |     Result      |  Engine   | Updated  |
-| :------: | :-------------: | :-------: | :------: |
-|   true   | EICAR test file | 5600.1067 | 20180903 |
+| Infected |             Result             |    Engine     | Updated  |
+| :------: | :----------------------------: | :-----------: | :------: |
+|   true   | EICAR Test File (NOT a Virus!) | 7.00.33.06080 | 20180909 |
 
 ---
 
