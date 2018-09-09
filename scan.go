@@ -59,6 +59,7 @@ type ResultsData struct {
 	Database string `json:"database" gorethink:"database"`
 	Updated  string `json:"updated" gorethink:"updated"`
 	MarkDown string `json:"markdown,omitempty" structs:"markdown,omitempty"`
+	Error    string `json:"error,omitempty" structs:"error,omitempty"`
 }
 
 func assert(err error) {
@@ -114,7 +115,7 @@ func ParseDrWEBOutput(drwebOut, baseInfo string, drwebErr error) (ResultsData, e
 	}).Debug("Dr.WEB Output: ", drwebOut)
 
 	if drwebErr != nil {
-		return ResultsData{}, drwebErr
+		return ResultsData{Error: drwebErr.Error()}, drwebErr
 	}
 
 	drweb := ResultsData{
