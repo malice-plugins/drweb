@@ -99,6 +99,7 @@ func AvScan(timeout int) DrWEB {
 	assert(err)
 	defer configd.Process.Kill()
 
+	time.Sleep(1 * time.Second)
 	output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	if sErr != nil {
 		// If fails try a second time
@@ -193,14 +194,13 @@ func getUpdatedDate() string {
 }
 
 func updateAV(ctx context.Context) error {
-	fmt.Println("Updating Dr.WEB...")
-
 	// drweb needs to have the daemon started first
 	configd := exec.Command("/opt/drweb.com/bin/drweb-configd", "-d")
 	_, err := configd.Output()
 	assert(err)
 	defer configd.Process.Kill()
 
+	fmt.Println("Updating Dr.WEB...")
 	fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "update"))
 	// Update UPDATED file
 	t := time.Now().Format("20060102")
@@ -209,7 +209,6 @@ func updateAV(ctx context.Context) error {
 }
 
 func updateLicense(ctx context.Context) error {
-	log.Debug("updating Dr.WEB license")
 	// drweb needs to have the daemon started first
 	configd := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
 	_, err := configd.Output()
@@ -217,12 +216,14 @@ func updateLicense(ctx context.Context) error {
 		return err
 	}
 	defer configd.Process.Kill()
+	time.Sleep(1 * time.Second)
 
 	// check for exec context timeout
 	if ctx.Err() == context.DeadlineExceeded {
 		return fmt.Errorf("command updateLicense() timed out")
 	}
 
+	log.Debug("updating Dr.WEB license")
 	if len(LicenseKey) > 0 {
 		fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "license", "--GetRegistered", LicenseKey))
 	} else {
@@ -233,7 +234,6 @@ func updateLicense(ctx context.Context) error {
 }
 
 func didLicenseExpire(ctx context.Context) (bool, error) {
-	log.Debug("checking Dr.WEB license")
 	// drweb needs to have the daemon started first
 	configd := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
 	_, err := configd.Output()
@@ -241,7 +241,9 @@ func didLicenseExpire(ctx context.Context) (bool, error) {
 		return false, err
 	}
 	defer configd.Process.Kill()
+	time.Sleep(1 * time.Second)
 
+	log.Debug("checking Dr.WEB license")
 	license := exec.CommandContext(ctx, "/opt/drweb.com/bin/drweb-ctl", "license")
 	lOut, err := license.Output()
 	if err != nil {
