@@ -1,6 +1,6 @@
 # malice-drweb
 
-[![Circle CI](https://circleci.com/gh/malice-plugins/drweb.png?style=shield)](https://circleci.com/gh/malice-plugins/drweb) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Image](https://img.shields.io/badge/docker%20image-433MB-blue.svg)](https://store.docker.com/community/images/malice/drweb)
+[![Circle CI](https://circleci.com/gh/malice-plugins/drweb.png?style=shield)](https://circleci.com/gh/malice-plugins/drweb) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Image](https://img.shields.io/badge/docker%20image-2.32GB-blue.svg)](https://store.docker.com/community/images/malice/drweb)
 
 Malice Dr.WEB AntiVirus Plugin
 
@@ -32,7 +32,7 @@ Usage: drweb [OPTIONS] COMMAND [arg...]
 
 Malice Dr.WEB AntiVirus Plugin
 
-Version: v0.1.0, BuildTime: 20180903
+Version: v0.1.0, BuildTime: 20180909
 
 Author:
   blacktop - <https://github.com/blacktop>
@@ -63,10 +63,10 @@ Run 'drweb COMMAND --help' for more information on a command.
 {
   "drweb": {
     "infected": true,
-    "result": "EICAR test file",
-    "engine": "5600.1067",
-    "database": "9005",
-    "updated": "20180903"
+    "result": "BackDoor.Dizhi",
+    "engine": "7.00.33.06080",
+    "database": "7209057",
+    "updated": "20180909"
   }
 }
 ```
@@ -97,6 +97,7 @@ Find a bug? Want more features? Find something missing in the documentation? Let
 ## TODO
 
 - [ ] add licence expiration detection
+- [ ] expose WEB ui
 
 ## CHANGELOG
 

@@ -13,6 +13,7 @@ all: build size tag test_all
 
 .PHONY: build
 build:
+	# docker build -t $(ORG)/$(NAME):$(VERSION) .
 	docker build --build-arg DRWEB_KEY=${DRWEB_KEY} -t $(ORG)/$(NAME):$(VERSION) .
 
 .PHONY: size
@@ -42,12 +43,14 @@ go-test:
 avtest:
 	@echo "===> Dr.WEB Version"
 	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "drweb-ctl --version" > tests/av_version.out
+	@echo "===> Dr.WEB BaseInfo"
+	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "/opt/drweb.com/bin/drweb-configd -d && drweb-ctl baseinfo" > tests/av_baseinfo.out
 	@echo "===> Dr.WEB EICAR Test"
-	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "drweb-ctl EICAR" > tests/av_eicar_scan.out || true
+	@docker run --init --rm --entrypoint=bash $(ORG)/$(NAME):$(VERSION) -c "/opt/drweb.com/bin/drweb-configd -d && drweb-ctl scan EICAR" > tests/av_eicar_scan.out || true
 	@echo "===> Dr.WEB $(MALWARE) Test"
-	@docker run --init --rm --entrypoint=bash -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -c "drweb-ctl $(MALWARE)" > tests/av_malware_scan.out || true
+	@docker run --init --rm --entrypoint=bash -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -c "/opt/drweb.com/bin/drweb-configd -d && drweb-ctl scan $(MALWARE)" > tests/av_malware_scan.out || true
 	@echo "===> Dr.WEB $(NOT_MALWARE) Test"
-	@docker run --init --rm --entrypoint=bash -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -c "drweb-ctl $(NOT_MALWARE)" > tests/av_clean_scan.out || true
+	@docker run --init --rm --entrypoint=bash -v $(PWD):/malware $(ORG)/$(NAME):$(VERSION) -c "/opt/drweb.com/bin/drweb-configd -d && drweb-ctl scan $(NOT_MALWARE)" > tests/av_clean_scan.out || true
 
 update:
 	@docker run --init --rm $(ORG)/$(NAME):$(VERSION) -V update

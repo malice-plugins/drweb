@@ -1,9 +1,9 @@
 {
   "drweb": {
     "infected": true,
-    "result": "BackDoor-CSB",
-    "engine": "5600.1067",
-    "database": "9005",
-    "updated": "20180903"
+    "result": "BackDoor.Dizhi",
+    "engine": "7.00.33.06080",
+    "database": "7209057",
+    "updated": "20180909"
   }
 }

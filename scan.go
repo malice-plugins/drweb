@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -81,56 +80,88 @@ func AvScan(timeout int) DrWEB {
 	defer os.Remove("/tmp/" + hash + ".xml")
 
 	var results ResultsData
+	var output string
+	var sErr error
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 
-	output, err := utils.RunCommand(ctx, "/usr/local/uvscan/uvscan_secure", path, "--xmlpath=/tmp/"+hash+".xml")
+	// drweb needs to have the daemon started first
+	_, err := utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-configd", "-d")
 	assert(err)
-	results, err = ParseMcAfeeOutput(output)
 
-	if err != nil {
+	output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
+	if sErr != nil {
 		// If fails try a second time
-		output, err := utils.RunCommand(ctx, "/usr/local/uvscan/uvscan_secure", path, "--xmlpath=/tmp/"+hash+".xml")
-		assert(err)
-		results, err = ParseMcAfeeOutput(output)
-		assert(err)
+		output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	}
 
-	return DrWEB{
-		Results: results,
-	}
+	baseinfo, err := utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "baseinfo")
+	assert(err)
+
+	results, err = ParseDrWEBOutput(output, baseinfo, sErr)
+
+	return DrWEB{Results: results}
 }
 
-// ParseMcAfeeOutput convert drweb output into ResultsData struct
-func ParseMcAfeeOutput(mcafeeout string) (ResultsData, error) {
+// ParseDrWEBOutput convert drweb output into ResultsData struct
+func ParseDrWEBOutput(drwebOut, baseInfo string, drwebErr error) (ResultsData, error) {
 
 	log.WithFields(log.Fields{
 		"plugin":   name,
 		"category": category,
 		"path":     path,
-	}).Debug("Dr.WEB Output: ", mcafeeout)
+	}).Debug("Dr.WEB Output: ", drwebOut)
 
-	xmlFile, err := os.Open("/tmp/" + hash + ".xml")
-	if err != nil {
-		fmt.Print(err)
+	if drwebErr != nil {
+		return ResultsData{}, drwebErr
 	}
-	defer xmlFile.Close()
-
-	byteValue, _ := ioutil.ReadAll(xmlFile)
-
-	var results McAfeeResults
-	err = xml.Unmarshal(byteValue, &results)
 
 	drweb := ResultsData{
-		Infected: strings.EqualFold(results.File.Status, "infected"),
-		Engine:   results.Preamble.AVEngineVersion.Value,
-		Database: results.Preamble.DatSetVersion.Value,
+		Infected: false,
+		Engine:   getDrWebVersion(),
 		Updated:  getUpdatedDate(),
-		Result:   results.File.VirusName,
+	}
+
+	for _, line := range strings.Split(drwebOut, "\n") {
+		if len(line) != 0 {
+			if strings.Contains(line, "- Ok") {
+				break
+			}
+			if strings.Contains(line, "infected with") {
+				drweb.Infected = true
+				drweb.Result = strings.TrimSpace(strings.TrimPrefix(line, path+" - infected with"))
+			}
+		}
+	}
+
+	log.WithFields(log.Fields{
+		"plugin":   name,
+		"category": category,
+		"path":     path,
+	}).Debug("Dr.WEB Base Info: ", baseInfo)
+
+	for _, line := range strings.Split(baseInfo, "\n") {
+		if len(line) != 0 {
+			if strings.Contains(line, "Core engine:") {
+				drweb.Engine = strings.TrimSpace(strings.TrimPrefix(line, "Core engine:"))
+			}
+			if strings.Contains(line, "Virus base records:") {
+				drweb.Database = strings.TrimSpace(strings.TrimPrefix(line, "Virus base records:"))
+			}
+		}
 	}
 
 	return drweb, nil
+}
+
+func getDrWebVersion() string {
+
+	versionOut, err := utils.RunCommand(nil, "/opt/drweb.com/bin/drweb-ctl", "--version")
+	assert(err)
+
+	log.Debug("DrWEB Version: ", versionOut)
+	return strings.TrimSpace(strings.TrimPrefix(versionOut, "drweb-ctl "))
 }
 
 func parseUpdatedDate(date string) string {
@@ -316,6 +347,7 @@ func main() {
 			// 	log.Errorln("drweb license has expired")
 			// 	log.Errorln("please get a new one here: http://www.drweb.com/ca/about/contact-us.aspx")
 			// }
+
 			hash = utils.GetSHA256(path)
 
 			drweb := AvScan(c.Int("timeout"))
@@ -341,7 +373,7 @@ func main() {
 				fmt.Printf(drweb.Results.MarkDown)
 			} else {
 				drweb.Results.MarkDown = ""
-				mcafeeJSON, err := json.Marshal(drweb)
+				drwebJSON, err := json.Marshal(drweb)
 				assert(err)
 				if c.Bool("callback") {
 					request := gorequest.New()
@@ -349,13 +381,13 @@ func main() {
 						request = gorequest.New().Proxy(os.Getenv("MALICE_PROXY"))
 					}
 					request.Post(os.Getenv("MALICE_ENDPOINT")).
-						Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", utils.GetSHA256(path))).
-						Send(string(mcafeeJSON)).
+						Set("X-Malice-ID", utils.Getopt("MALICE_SCANID", hash)).
+						Send(string(drwebJSON)).
 						End(printStatus)
 
 					return nil
 				}
-				fmt.Println(string(mcafeeJSON))
+				fmt.Println(string(drwebJSON))
 			}
 		} else {
 			log.WithFields(log.Fields{
