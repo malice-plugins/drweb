@@ -1,6 +1,6 @@
 # malice-drweb
 
-[![Circle CI](https://circleci.com/gh/malice-plugins/drweb.png?style=shield)](https://circleci.com/gh/malice-plugins/drweb) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Image](https://img.shields.io/badge/docker%20image-970MB-blue.svg)](https://store.docker.com/community/images/malice/drweb)
+[![Circle CI](https://circleci.com/gh/malice-plugins/drweb.png?style=shield)](https://circleci.com/gh/malice-plugins/drweb) [![License](http://img.shields.io/:license-mit-blue.svg)](http://doge.mit-license.org) [![Docker Stars](https://img.shields.io/docker/stars/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Pulls](https://img.shields.io/docker/pulls/malice/drweb.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Image](https://img.shields.io/badge/docker%20image-970MB-blue.svg)](https://store.docker.com/community/images/malice/drweb) [![Docker Repository on Quay](https://quay.io/repository/blacktop/drweb/status "Docker Repository on Quay")](https://quay.io/repository/blacktop/drweb)
 
 Malice Dr.WEB AntiVirus Plugin
 
@@ -16,6 +16,8 @@ Malice Dr.WEB AntiVirus Plugin
 
 1. Install [Docker](https://www.docker.com/).
 2. Download [trusted build](https://store.docker.com/community/images/malice/drweb) from public [docker store](https://store.docker.com): `docker pull malice/drweb`
+
+> **NOTE:** **DockerCloud** is having issues so in the mean time you can pull from [quay.io](quay.io) `docker pull quay.io/blacktop/drweb` and then `docker tag quay.io/blacktop/drweb malice/drweb`
 
 ## Usage
 
@@ -96,7 +98,7 @@ Find a bug? Want more features? Find something missing in the documentation? Let
 
 ## TODO
 
-- [ ] add licence expiration detection
+- [x] add licence expiration detection
 - [ ] expose WEB ui
 
 ## CHANGELOG
