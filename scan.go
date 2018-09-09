@@ -100,10 +100,13 @@ func AvScan(timeout int) DrWEB {
 	defer configd.Process.Kill()
 
 	time.Sleep(1 * time.Second)
+
+	log.Debug("running drweb-ctl scan")
 	output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	if sErr != nil {
 		// If fails try a second time
 		time.Sleep(10 * time.Second)
+		log.Debug("re-running drweb-ctl scan")
 		output, sErr = utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "scan", path)
 	}
 
