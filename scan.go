@@ -228,9 +228,9 @@ func updateLicense(ctx context.Context) error {
 
 	log.Debug("updating Dr.WEB license")
 	if len(LicenseKey) > 0 {
-		fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "license", "--GetRegistered", LicenseKey))
+		log.Debugln(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "license", "--GetRegistered", LicenseKey))
 	} else {
-		fmt.Println(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "license", "--GetDemo"))
+		log.Debugln(utils.RunCommand(ctx, "/opt/drweb.com/bin/drweb-ctl", "license", "--GetDemo"))
 	}
 
 	return nil
