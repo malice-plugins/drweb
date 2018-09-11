@@ -17,8 +17,6 @@ Malice Dr.WEB AntiVirus Plugin
 1. Install [Docker](https://www.docker.com/).
 2. Download [trusted build](https://store.docker.com/community/images/malice/drweb) from public [docker store](https://store.docker.com): `docker pull malice/drweb`
 
-> **NOTE:** **DockerCloud** is having issues so in the mean time you can pull from [quay.io](quay.io) `docker pull quay.io/blacktop/drweb` and then `docker tag quay.io/blacktop/drweb malice/drweb`
-
 ## Usage
 
 ```
