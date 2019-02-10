@@ -30,7 +30,7 @@ RUN groupadd -r malice \
     && mkdir /malware \
     && chown -R malice:malice /malware
 
-ENV DRWEB 11.0.5
+ENV DRWEB 11.0.6
 
 # Install Dr.WEB AV
 # COPY drweb-11.0.5-av-linux-amd64.run /tmp/drweb-11.0.5-av-linux-amd64.run

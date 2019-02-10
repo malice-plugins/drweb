@@ -9,7 +9,7 @@ DRWEB_KEY?=$(shell cat drweb.key)
 MALWARE=tests/malware
 NOT_MALWARE=tests/not.malware
 
-all: build size tag test_all
+all: build_w_key size tag test_all
 
 .PHONY: build
 build:
